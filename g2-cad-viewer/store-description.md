@@ -13,3 +13,5 @@ Privacy: the app contains no keys. Each user enters their own in Settings, store
 Glasses controls: tap = next mode · swipe = adjust · hold = talk (push-to-talk) · double-tap = exit. Spoken designs ask you to confirm first (tap = go, swipe = cancel).
 
 Licence: free software under the GNU GPL v3. It is built on GPL software: LibreDWG (GPL-3.0) for DWG/DXF and OpenSCAD (GPL-2.0+) for AI designs, plus three.js (MIT) and OpenCascade via occt-import-js (LGPL-2.1).
+
+Source code (GPL-3.0): https://github.com/M4k10HREM/g2-cad-viewer
