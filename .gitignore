@@ -1,0 +1,17 @@
+# Dependencies and build output
+node_modules/
+dist/
+*.ehpk
+g2-cad-viewer/public/wasm/
+
+# Secrets and local settings, never commit
+.env.local
+.env.*.local
+.dev.vars
+.wrangler/
+
+# Personal / machine-specific
+.claude/
+g2-cad-viewer/dev-qr.png
+g2-cad-viewer/icon-preview.png
+g2-cad-viewer/PUBLISH.md

@@ -1,0 +1,24 @@
+name = "g2-cad-ai"
+main = "src/index.ts"
+compatibility_date = "2026-11-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Public address the glasses app calls: https://g2-cad-ai.<subdomain>.workers.dev
+workers_dev = true
+# No per-version preview addresses: one URL to manage.
+preview_urls = false
+
+# Secrets (set with `npx wrangler secret put <NAME>`, never commit them):
+#   ANTHROPIC_API_KEY  — your Claude API key
+#   APP_TOKEN          — any long random string; the glasses app sends it to prove it's yours
+#   ELEVENLABS_API_KEY — optional; enables ElevenLabs voice commands (speech-to-text)
+
+[vars]
+# Which web origins may call this Worker. "*" is fine because APP_TOKEN gates access.
+ALLOWED_ORIGIN = "*"
+
+
+# Temporary storage for STL/.scad download links (files expire after 15 minutes).
+# Wrangler creates or links this KV namespace automatically on deploy.
+[[kv_namespaces]]
+binding = "EXPORTS"

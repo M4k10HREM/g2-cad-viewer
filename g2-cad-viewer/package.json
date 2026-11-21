@@ -1,0 +1,28 @@
+{
+  "name": "g2-cad-viewer",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "pack": "npm run build && evenhub pack app.json dist",
+    "simulate": "evenhub-simulator http://localhost:5173"
+  },
+  "dependencies": {
+    "@evenrealities/even_hub_sdk": "^0.0.16",
+    "@mlightcad/libredwg-web": "^0.9.1",
+    "dxf-parser": "^1.1.2",
+    "occt-import-js": "^0.0.23",
+    "openscad-wasm-prebuilt": "^1.2.0",
+    "three": "^0.187.0"
+  },
+  "devDependencies": {
+    "@evenrealities/evenhub-cli": "^0.2.0",
+    "@evenrealities/evenhub-simulator": "^0.7.2",
+    "@types/three": "^0.187.0",
+    "typescript": "^5.7.0",
+    "vite": "^5.4.0"
+  }
+}
