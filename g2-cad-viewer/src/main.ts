@@ -731,7 +731,8 @@ async function connectGlasses() {
 
   const d = new GlassesDisplay(bridge)
   d.renderTiles = renderTiles
-  d.onError = msg => ui.setChip('glasses', 'warn', truncate(msg, 28))
+  d.onError = msg => ui.setChip('glasses', 'warn', truncate(msg, 34))
+  d.onRecovered = () => ui.setChip('glasses', 'ok', 'Glasses')
   d.onFrameStats = showLinkStats
   d.onImageRejected = result => {
     // If the Even app can't take the compact format, fall back for this session.
@@ -778,8 +779,18 @@ async function connectGlasses() {
     const sysType = eventTypeOf(event.sysEvent)
     const textType = eventTypeOf(event.textEvent)
     handleInput(bridge, sysType, textType)
+    if (sysType === OsEventTypeList.FOREGROUND_EXIT_EVENT) {
+      // Never keep the microphone open in the background.
+      if (micOn || stt) {
+        if (cardKind === 'talk') closeCard()
+        stopVoice()
+      }
+      return
+    }
     if (sysType === OsEventTypeList.FOREGROUND_ENTER_EVENT) {
       d.requestFrame()
+      if (!micOn && voiceConfigured() && !holdMode()) void startListening(bridge)
+      else if (voiceConfigured()) ui.setMicButton(false, true)
       return
     }
     if (sysType === OsEventTypeList.SYSTEM_EXIT_EVENT || sysType === OsEventTypeList.ABNORMAL_EXIT_EVENT) {
@@ -799,6 +810,15 @@ async function connectGlasses() {
 
   // Glasses mic needs the startup page to exist first.
   startVoice(bridge)
+
+  // Dev only (stripped from production): stage scenes for store screenshots.
+  //   ?say=design a …   → shows the spoken-design confirm card
+  //   ?busy=1           → shows the "Designing…" gyroscope
+  if (import.meta.env.DEV) {
+    const say = params.get('say')
+    if (say) setTimeout(() => handleUtterance(say, 'voice'), 1500)
+    if (params.get('busy')) setTimeout(() => startWorking('Designing…'), 1500)
+  }
 }
 
 // Dev conveniences: ?layout=single|wide|full  ?model=models/part.stp

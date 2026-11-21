@@ -4,6 +4,13 @@ View, explore and **design** 3D CAD parts on [Even Realities G2](https://www.eve
 
 Open a CAD or 3D file on your phone, and the glasses show a crisp hidden-line drawing you can rotate, tilt, zoom, step through part by part, isolate, explode and turntable. Use the temple touchpad or your voice. Or hold the touchpad and say *"design a 60 mm L-bracket with two M5 holes"*: Claude writes the part as OpenSCAD code, your phone compiles it, and it appears on the glasses.
 
+![G2 CAD Viewer](g2-cad-viewer/store-assets/cover-1200x600.png)
+
+| On the glasses | |
+|---|---|
+| ![STEP assembly, hidden-line](g2-cad-viewer/store-assets/screenshot-03-assembly.png) | ![Exploded view](g2-cad-viewer/store-assets/screenshot-06-explode.png) |
+| ![Spoken design confirmation](g2-cad-viewer/store-assets/screenshot-08-confirm.png) | ![DXF drawing, plan view](g2-cad-viewer/store-assets/screenshot-07-drawing.png) |
+
 | | |
 |---|---|
 | **Files** | STEP / IGES / BREP · DWG / DXF · GLB · STL · OBJ · PLY · 3MF · FBX |
@@ -34,6 +41,10 @@ npm run simulate   # Even Hub glasses simulator
 **No keys are ever built into the app.** Each user enters their own Worker URL, token and speech settings in the app's Settings panel, stored only on their phone. API keys live only in each user's own Cloudflare Worker.
 
 **Building your own copy?** Change `package_id` in `g2-cad-viewer/app.json` to your own reverse-domain ID before you pack or publish.
+
+## Privacy and terms
+
+[Privacy policy](PRIVACY.md) · [Terms of use](TERMS.md). In short: the developer collects nothing, and optional features talk only to services you set up yourself.
 
 ## Licence
 

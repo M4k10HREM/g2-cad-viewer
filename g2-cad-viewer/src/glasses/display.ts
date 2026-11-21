@@ -106,6 +106,9 @@ export interface TextContent {
   msg: string
 }
 
+// Results that mean "this image can't be used" (vs. a transport failure like sendFailed).
+const FORMAT_ERRORS = new Set(['imageException', 'imageSizeInvalid', 'imageToGray4Failed'])
+
 const TIMEOUT_TEXT_MS = 4000
 const TIMEOUT_IMAGE_MS = 12000
 
@@ -139,8 +142,11 @@ export class GlassesDisplay {
   onFrameSent: () => void = () => {}
   /** Timing of each frame that reached the glasses (for the phone's link readout). */
   onFrameStats: (s: FrameStats) => void = () => {}
-  /** A tile was rejected by the Even app (e.g. unsupported image format). */
+  /** A tile was rejected by the Even app because of its format. */
   onImageRejected: (result: string) => void = () => {}
+  /** Frames reach the glasses again after one or more send failures. */
+  onRecovered: () => void = () => {}
+  private sendFailures = 0
   onError: (msg: string) => void = () => {}
 
   constructor(private bridge: EvenAppBridge) {}
@@ -316,14 +322,29 @@ export class GlassesDisplay {
             new ImageRawDataUpdate({ containerID: ID.tile0 + i, containerName: `tile${i}`, imageData: tiles[i] }),
           ), TIMEOUT_IMAGE_MS)
           sendMs += performance.now() - t0
-          if (res !== undefined && String(res) !== 'success') {
+          const result = res === undefined ? 'timeout' : String(res)
+          if (result !== 'success') {
             complete = false
-            this.onError(`Image: ${String(res)}`)
-            this.onImageRejected(String(res))
+            if (FORMAT_ERRORS.has(result)) {
+              // The Even app couldn't use this image format.
+              this.onError(`Image: ${result}`)
+              this.onImageRejected(result)
+            } else {
+              // Bluetooth hiccup (glasses asleep, out of range, taken off…):
+              // retry quietly with a growing pause; the latest view is resent.
+              this.sendFailures++
+              this.onError(this.sendFailures >= 3 ? 'Glasses not reachable — retrying' : `Image: ${result}`)
+              const wait = Math.min(1000 * 2 ** (this.sendFailures - 1), 15_000)
+              setTimeout(() => this.requestFrame(), wait)
+            }
             break
           }
         }
         if (complete && tiles.length) {
+          if (this.sendFailures) {
+            this.sendFailures = 0
+            this.onRecovered()
+          }
           this.onFrameStats({
             renderMs: frame.renderMs,
             encodeMs: frame.encodeMs,
