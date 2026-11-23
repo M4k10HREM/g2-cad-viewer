@@ -167,7 +167,7 @@ export function mountUi(h: UiHandlers, accept: string) {
         <summary><h2 style="display:inline">Settings: your keys</h2></summary>
         <p class="hint">Stored only on this phone, never inside the app package. Each user brings their own.</p>
         <h3>AI design (your Cloudflare Worker)</h3>
-        <input id="set-ai-url" type="url" placeholder="https://g2-cad-ai.your-name.workers.dev" autocomplete="off" />
+        <input id="set-ai-url" type="url" placeholder="Worker address (ends in .workers.dev)" autocomplete="off" />
         <input id="set-ai-token" type="password" placeholder="App token (APP_TOKEN on your Worker)" autocomplete="off" />
         <h3>Voice (speech-to-text)</h3>
         <select id="set-stt-provider">
@@ -391,6 +391,12 @@ function syncSttFields() {
       : ''
 }
 
+export function setSettingsStatus(text: string, error = false) {
+  const el = $('#set-status')
+  el.textContent = text
+  el.classList.toggle('err', error)
+}
+
 export function fillSettings(s: Settings, status?: string) {
   $<HTMLInputElement>('#set-ai-url').value = s.aiUrl
   $<HTMLInputElement>('#set-ai-token').value = s.aiToken
@@ -400,7 +406,7 @@ export function fillSettings(s: Settings, status?: string) {
   $<HTMLInputElement>('#set-intro').checked = s.showIntro
   $<HTMLSelectElement>('#set-encoding').value = s.imageEncoding
   syncSttFields()
-  $('#set-status').textContent = status ?? ''
+  setSettingsStatus(status ?? '')
   // Open the panel on first run so new users see where to put their keys.
   if (!s.aiUrl && !s.sttKey && status === undefined) $<HTMLDetailsElement>('#settings').open = true
 }

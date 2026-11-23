@@ -18,7 +18,7 @@ import { ACCEPT_ATTR, loadModel } from './model/loaders'
 import type { LoadedModel } from './model/model'
 import { makeSampleModel } from './model/sample'
 import { Viewer } from './render/viewer'
-import { attachBridgeStorage, getSettings, saveSettings, type Settings } from './settings'
+import { attachBridgeStorage, getSettings, normalizeWorkerUrl, saveSettings, type Settings } from './settings'
 import { setStorageBridge } from './storage'
 import * as ui from './ui'
 
@@ -53,6 +53,10 @@ ui.setMicButton(false, false)
 ui.fillSettings(getSettings())
 
 async function applySettings(next: Settings) {
+  if (next.aiUrl.trim() && !normalizeWorkerUrl(next.aiUrl)) {
+    ui.setSettingsStatus('Not saved: the Worker address must end in .workers.dev', true)
+    return
+  }
   const saved = await saveSettings(next)
   ui.fillSettings(saved, bridgeRef ? 'Saved on this phone' : 'Saved in this browser')
   syncAi()

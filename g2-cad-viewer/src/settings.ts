@@ -54,15 +54,25 @@ function clean(raw: Partial<Settings> | null | undefined): Partial<Settings> {
 }
 
 /**
- * Forgiving Worker URL: adds https:// when missing (otherwise the request goes
- * to the app's own server and 404s), and drops a pasted /health, /generate
- * or /stt-token suffix and trailing slashes.
+ * Worker address → its origin, or '' when it isn't one the app may contact.
+ * Only Cloudflare Workers addresses are accepted, matching the *.workers.dev
+ * entry in app.json's network whitelist. Forgiving about a missing scheme and
+ * about a pasted path such as /health.
  */
 export function normalizeWorkerUrl(input: string): string {
-  let u = input.trim().replace(/\s+/g, '')
+  const u = input.trim().replace(/\s+/g, '')
   if (!u) return ''
-  if (!/^https?:\/\//i.test(u)) u = `https://${u.replace(/^\/+/, '')}`
-  return u.replace(/\/+(health|generate|stt-token)\/*$/i, '').replace(/\/+$/, '')
+  let url: URL
+  try {
+    url = new URL(/^https?:/i.test(u) ? u : `https:${u}`)
+  } catch {
+    return ''
+  }
+  // `npm run dev` only: allow a Worker running locally (wrangler dev).
+  if (import.meta.env.DEV && url.hostname === 'localhost') return url.origin
+  if (!url.hostname.endsWith('.workers.dev') || url.port || url.username) return ''
+  url.protocol = 'https:'
+  return url.origin
 }
 
 const nonEmpty =(s: Partial<Settings>) =>

@@ -131,7 +131,7 @@ Keys are **entered inside the app, per phone**. They are never built into the ap
    - (Optional) **Voice**: choose *ElevenLabs (key stays on your Worker)* (needs Part 3b), or *Deepgram* and paste a Deepgram key
 4. Press **Save**. You'll see "Saved on this phone". The values live in the Even app's storage on that phone only.
 
-`app.json` already allows any `*.workers.dev` address, so you don't need to edit it. **Check on real glasses:** if AI design works in the phone browser but the Even app blocks it, the Even app may not honour the wildcard. In that case add your exact URL to `app.json`'s `whitelist` as well (your URL isn't secret; the token is).
+`app.json` already allows any `*.workers.dev` address, so you don't need to edit it. The app accepts only `*.workers.dev` addresses (no custom domains). **Check on real glasses:** if AI design works in the phone browser but the Even app blocks it, the Even app may not honour the wildcard. In that case add your exact URL to `app.json`'s `whitelist` as well (your URL isn't secret; the token is).
 
 *Developer shortcut:* you can also put values in `.env.local` (see `.env.example`). Those are used **only** by `npm run dev` and are stripped from `npm run build` / `npm run pack`.
 
